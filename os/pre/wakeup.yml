@@ -1,0 +1,7 @@
+- hosts: localhost
+
+  tasks:
+    - name: Disable wake up on devices like mouse or keyboard
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/power/sleep-inactive-ac-type"
+        value: "'nothing'"

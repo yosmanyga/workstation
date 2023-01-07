@@ -1,0 +1,32 @@
+- hosts: localhost
+
+  tasks:
+    - name: Install chrome
+      become: yes
+      apt:
+        name: google-chrome-stable
+        state: present
+
+    - name: Configure chrome to use system title bar and borders
+      become: no
+      lineinfile:
+        path: ~/.config/google-chrome/Default/Preferences
+        regexp: '"custom_chrome_frame":\s*\w+'
+        line: '    "custom_chrome_frame": true'
+        insertafter: '"browser": {'
+        state: present
+
+    # Allows unprivileged users to create user namespaces, which is
+    # a feature that Google Chrome relies on for its sandboxing mechanism.
+    # By disabling the restriction, Chrome can properly utilize user namespaces,
+    # which may be necessary for it to function correctly in certain environments
+    - name: Set kernel parameter to allow unprivileged user namespaces permanently
+      become: yes
+      lineinfile:
+        path: /etc/sysctl.d/99-sysctl.conf
+        line: 'kernel.apparmor_restrict_unprivileged_userns=0'
+        state: present
+
+    - name: Apply sysctl changes
+      become: yes
+      command: sysctl --system

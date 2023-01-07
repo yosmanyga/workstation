@@ -1,0 +1,92 @@
+- hosts: localhost
+  become: true
+
+  vars_files:
+    - ../../vars.yml
+
+  tasks:
+    - name: Create bashrc directory
+      file: path=~/.bashrc.d state=directory
+
+    - name: Create docker bashrc
+      file: path=~/.bashrc.d/satis.sh state=touch
+
+    - name: Add functions to bashrc
+      blockinfile:
+        path: ~/.bashrc.d/satis.sh
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        block: |
+          satis-versioned() {
+              SATIS_BUILDER="/home/yosmanyga/Work/Projects/yosmanyga/satis-builder"
+
+              mkdir /tmp/satis-versioned
+
+              docker run --rm -it \
+                  --user "$(id -u):$(id -g)" \
+                  --volume "${SATIS_BUILDER}/code:/var/www" \
+                  --volume "${SATIS_BUILDER}/docs/repos/repos-versioned:/tmp/input" \
+                  --volume "/tmp/satis-versioned/:/tmp/output" \
+                  -w /var/www \
+                  yosmanyga/php php src/generate.php /tmp/input /tmp/output
+
+              docker run --rm -it \
+                  --user "$(id -u):$(id -g)" \
+                  --volume "/tmp/satis-versioned:/build" \
+                  --volume "${COMPOSER_HOME:-$HOME/.composer}:/composer" \
+                  --volume /home/yosmanyga/Work:/home/yosmanyga/Work \
+                  composer/satis build satis.json public
+
+              rsync -r -a -v --delete /tmp/satis-versioned/public/* /home/yosmanyga/Work/Tools/satis-versioned
+              rm -rf /tmp/satis-versioned/
+
+              docker network create development 2>/dev/null
+
+              docker run --rm -it \
+                `# Name the container` \
+                --name=satis-versioned \
+                `# Mount generated files` \
+                --volume /home/yosmanyga/Work/Tools/satis-versioned:/usr/share/nginx/html \
+                `# Different port to keep free the default one` \
+                --publish 8081:80 \
+                `# Must run inside the development network` \
+                --network=development \
+                `# Nginx server` \
+                yosmanyga/nginx
+          }
+          satis-wip() {
+              SATIS_BUILDER="/home/yosmanyga/Work/Projects/yosmanyga/satis-builder"
+
+              mkdir /tmp/satis-wip
+
+              docker run --rm -it \
+                  --user "$(id -u):$(id -g)" \
+                  --volume "${SATIS_BUILDER}/code:/var/www" \
+                  --volume "${SATIS_BUILDER}/docs/repos/repos-wip:/tmp/input" \
+                  --volume "/tmp/satis-wip/:/tmp/output" \
+                  -w /var/www \
+                  yosmanyga/php php src/generate.php /tmp/input /tmp/output
+
+              docker run --rm -it \
+                  --user "$(id -u):$(id -g)" \
+                  --volume "/tmp/satis-wip:/build" \
+                  --volume "${COMPOSER_HOME:-$HOME/.composer}:/composer" \
+                  --volume /home/yosmanyga/Work:/home/yosmanyga/Work \
+                  composer/satis build satis.json public
+
+              rsync -r -a -v --delete /tmp/satis-wip/public/* /home/yosmanyga/Work/Tools/satis-wip
+              rm -rf /tmp/satis-wip/
+
+              docker network create development 2>/dev/null
+
+              docker run --rm -it \
+                `# Name the container` \
+                --name=satis-wip \
+                `# Mount generated files` \
+                --volume /home/yosmanyga/Work/Tools/satis-wip:/usr/share/nginx/html \
+                `# Different port to keep free the default one` \
+                --publish 8081:80 \
+                `# Must run inside the development network` \
+                --network=development \
+                `# Nginx server` \
+                yosmanyga/nginx
+          }

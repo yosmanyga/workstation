@@ -1,0 +1,19 @@
+- hosts: localhost
+  become: true
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Install requirements
+      become: true
+      package:
+        name:
+          - python3-psutil
+          - dconf-cli
+
+- import_playbook: os/pre/index.yml
+- import_playbook: apps/pre/index.yml
+
+- import_playbook: os/post/index.yml
+- import_playbook: apps/post/index.yml

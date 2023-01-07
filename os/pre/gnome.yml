@@ -1,0 +1,22 @@
+- hosts: localhost
+  become: yes
+
+  tasks:
+    # To switch only between the windows from monitor where the mouse is
+    - name: Install extension AATWS - Advanced Alt-Tab Window Switcher
+      # Download repo, compile and install extension
+      command: |
+          git clone https://github.com/G-dH/advanced-alttab-window-switcher.git |
+          cd advanced-alttab-window-switcher/ |
+          make |
+          make install |
+          cd .. |
+          rm -rf advanced-alttab-window-switcher
+    # The schema is not installed automatically, so we need to copy it manually
+    - name: Copy and compile schema
+      command: |
+        cp ~/.local/share/gnome-shell/extensions/advanced-alt-tab\@G-dH.github.com/schemas/org.gnome.shell.extensions.advanced-alt-tab-window-switcher.gschema.xml /usr/share/glib-2.0/schemas/ |
+        glib-compile-schemas /usr/share/glib-2.0/schemas/
+    - name: Set Common => Default Monitor to 'Monitor with mouse pointer'
+      command: gsettings set org.gnome.shell.extensions.advanced-alt-tab-window-switcher switcher-popup-monitor '3'
+      

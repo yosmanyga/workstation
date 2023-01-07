@@ -1,0 +1,5 @@
+- import_playbook: dock.yml
+- import_playbook: performance.yml
+- import_playbook: settings.yml
+- import_playbook: shortcuts.yml
+- import_playbook: wakeup.yml

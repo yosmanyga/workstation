@@ -1,0 +1,11 @@
+- hosts: localhost
+
+  tasks:
+    - name: Set clock format
+      dconf:
+        key: "/org/gnome/desktop/interface/clock-format"
+        value: "'12h'"
+        state: present
+
+    - name: Add Spanish keyboard layout
+      command: gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'es')]"

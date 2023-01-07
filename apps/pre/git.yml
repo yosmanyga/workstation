@@ -1,0 +1,70 @@
+- hosts: localhost
+  become: false
+
+  vars_files:
+    - ../../vars.yml
+
+  tasks:
+    - name: Install git
+      become: true
+      apt:
+        name: git
+        state: present
+
+    - name: Configure user name
+      command: git config --global user.name "{{ git_user_name }}"
+
+    - name: Configure user email
+      command: git config --global user.email "{{ git_user_email }}"
+
+    - name: Configure file mode
+      command: git config --global core.fileMode {{ git_core_file_mode }}
+
+    - name: Configure main branch
+      command: git config --global init.defaultBranch {{ git_init_default_branch }}
+
+    - name: Create bashrc directory
+      file: path=~/.bashrc.d state=directory
+
+    - name: Create git bashrc
+      file: path=~/.bashrc.d/git.sh state=touch
+
+    - name: Add functions to bashrc
+      blockinfile:
+        path: ~/.bashrc.d/git.sh
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        block: |
+          repull () {
+              git fetch --all
+              git reset --hard origin/main
+              git clean -f
+          }
+
+          repush () {
+              git add .
+              git commit --amend --no-edit
+              git push -f
+          }
+
+          retag () {
+              # Check if current folder is a git repo
+              if [ ! -d .git ]; then
+              echo "Not a git repository"
+              exit 1
+              fi
+
+              # Remove repo
+              rm -rf .git
+
+              # Initialize new repo
+              git init
+
+              # Add all files
+              git add .
+
+              # Commit
+              git commit -m "Added first draft"
+
+              # Tag
+              git tag -a 0.1.0 -m "Implemented first draft"
+          }

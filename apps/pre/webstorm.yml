@@ -1,0 +1,9 @@
+- hosts: localhost
+  become: true
+
+  tasks:
+    - name: Install webstorm
+      snap:
+        name: webstorm
+        classic: yes
+        state: present

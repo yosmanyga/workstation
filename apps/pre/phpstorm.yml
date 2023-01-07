@@ -1,0 +1,9 @@
+- hosts: localhost
+  become: true
+
+  tasks:
+    - name: Install phpstorm
+      snap:
+        name: phpstorm
+        classic: yes
+        state: present

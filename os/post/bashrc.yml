@@ -1,0 +1,20 @@
+- hosts: localhost
+  tasks:
+    - name: Ensure ~/.bashrc sources files from ~/.bashrc.d
+      lineinfile:
+        path: "{{ lookup('env', 'HOME') }}/.bashrc"
+        create: yes
+        line: |
+          if [ -d "$HOME/.bashrc.d" ]; then
+            for file in "$HOME/.bashrc.d"/*; do
+              [ -r "$file" ] && . "$file"
+            done
+            unset file
+          fi
+        state: present
+        insertafter: EOF
+
+    - name: Source ~/.bashrc
+      shell: . "{{ lookup('env', 'HOME') }}/.bashrc"
+      args:
+        executable: /bin/bash

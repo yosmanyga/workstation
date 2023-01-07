@@ -1,0 +1,31 @@
+- hosts: localhost
+
+  tasks:
+    - name: Create bashrc directory
+      file: path=~/.bashrc.d state=directory
+
+    - name: Create npm bashrc
+      file: path=~/.bashrc.d/npm.sh state=touch
+
+    - name: Add functions to bashrc
+      blockinfile:
+        path: ~/.bashrc.d/npm.sh
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        block: |
+          npm () {
+            docker_options=(
+              --volume $(pwd):/app
+              --volume $SSH_AUTH_SOCK:/ssh-agent
+              --volume ~/.ssh/known_hosts:/etc/ssh/ssh_known_hosts
+              --volume ~/.ssh/config:/etc/ssh/config
+              --workdir /app
+              yosmanyga/node
+            )
+
+            if [ $# -eq 0 ]; then
+              docker run -it --rm "${docker_options[@]}" sh
+            else
+              docker run -it --rm "${docker_options[@]}" npm "$@"
+            fi
+          }
+

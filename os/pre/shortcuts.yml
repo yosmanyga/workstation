@@ -1,0 +1,49 @@
+- hosts: localhost
+
+  tasks:
+    - name: Set Terminal shortcut
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/media-keys/terminal"
+        value: "['<Control><Super>t']"
+
+    - name: Set Calculator shortcut
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/media-keys/calculator"
+        value: "['<Control><Super>c']"
+
+    # System Monitor
+
+    - name: Set System Monitor shortcut name
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/name"
+        value: "'System Monitor'"
+    - name: System Monitor shortcut command
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/command"
+        value: "'gnome-system-monitor'"
+    - name: System Monitor shortcut binding
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/binding"
+        value: "'<Control><Super>m'"
+
+    # Suspend
+
+    - name: Suspend shortcut name
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/name"
+        value: "'Suspend'"
+    - name: Suspend shortcut command
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/command"
+        value: "'systemctl suspend -i'"
+    - name: Suspend shortcut binding
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/binding"
+        value: "'<Control><Super>s'"
+
+    # Enable shortcuts
+
+    - name: Enable custom keybindings
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings"
+        value: "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/']"
