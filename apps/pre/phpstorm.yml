@@ -1,9 +1,56 @@
 - hosts: localhost
   become: true
 
+  vars:
+    dir: "/opt/phpstorm"
+    user: "{{ ansible_user_id }}"
+
   tasks:
-    - name: Install phpstorm
-      snap:
-        name: phpstorm
-        classic: yes
+    - name: Ensure dependencies are installed
+      apt:
+        name: [ tar, wget ]
         state: present
+        update_cache: yes
+
+    - name: Create PhpStorm install directory
+      file:
+        path: "{{ dir }}"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: Download PhpStorm tarball
+      get_url:
+        url: "https://download.jetbrains.com/webide/PhpStorm-2025.2.1.tar.gz"
+        dest: "/tmp/PhpStorm.tar.gz"
+        mode: '0644'
+
+    - name: Extract PhpStorm
+      unarchive:
+        src: "/tmp/PhpStorm.tar.gz"
+        dest: "{{ dir }}"
+        remote_src: yes
+        extra_opts: [ --strip-components=1 ]
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: Create PhpStorm desktop entry
+      copy:
+        dest: "/usr/share/applications/phpstorm.desktop"
+        content: |
+          [Desktop Entry]
+          Version=1.0
+          Type=Application
+          Name=PhpStorm
+          Exec={{ dir }}/bin/phpstorm.sh
+          Icon={{ dir }}/bin/phpstorm.png
+          Comment=PhpStorm IDE
+          Categories=Development;IDE;
+          Terminal=false
+          StartupWMClass=jetbrains-phpstorm
+        mode: '0644'
+
+    - name: Remove downloaded tarball
+      file:
+        path: "/tmp/WebStorm.tar.gz"
+        state: absent

@@ -1,0 +1,30 @@
+- hosts: localhost
+
+  tasks:
+    - name: Get default profile UUID
+      command: gsettings get org.gnome.Terminal.ProfilesList default
+      register: uuid_cmd
+
+    - name: Set profile UUID fact
+      set_fact:
+        gnome_profile_uuid: "{{ uuid_cmd.stdout | regex_replace(\"'\", \"\") }}"
+
+    - name: Set to not use system font
+      command: dconf write /org/gnome/terminal/legacy/profiles:/:{{ gnome_profile_uuid }}/use-system-font false
+      changed_when: true
+
+    - name: Set to not use theme colors
+      command: dconf write /org/gnome/terminal/legacy/profiles:/:{{ gnome_profile_uuid }}/use-theme-colors false
+      changed_when: true
+
+    - name: Set font
+      command: dconf write /org/gnome/terminal/legacy/profiles:/:{{ gnome_profile_uuid }}/font "'Monospace 14'"
+      changed_when: true
+
+    - name: Set background color
+      command: dconf write /org/gnome/terminal/legacy/profiles:/:{{ gnome_profile_uuid }}/background-color "'#222222'"
+      changed_when: true
+
+    - name: Set foreground color
+      command: dconf write /org/gnome/terminal/legacy/profiles:/:{{ gnome_profile_uuid }}/foreground-color "'#00FF00'"
+      changed_when: true

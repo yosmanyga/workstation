@@ -3,6 +3,6 @@
   tasks:
     - name: Change icon of ~/Work folder
       command: >
-        gio set ~/Work metadata::custom-icon file:///usr/share/icons/Yaru/48x48@2x/places/folder-dropbox.png
+        gio set ~/Work metadata::custom-icon file:///usr/share/icons/Adwaita/scalable/places/user-bookmarks.svg
       
         

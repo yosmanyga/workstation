@@ -1,0 +1,9 @@
+- hosts: localhost
+  become: true
+
+  tasks:
+    - name: Ensure mc is installed
+      ansible.builtin.apt:
+        name: mc
+        state: present
+        update_cache: true

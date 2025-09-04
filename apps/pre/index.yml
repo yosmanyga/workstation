@@ -2,9 +2,12 @@
 - import_playbook: composer.yml
 - import_playbook: docker.yml
 - import_playbook: files.yml
+- import_playbook: firefox.yml
 - import_playbook: git.yml
-- import_playbook: misc.yml
+- import_playbook: mc.yml
 - import_playbook: npm.yml
 - import_playbook: phpstorm.yml
 - import_playbook: satis.yml
+- import_playbook: terminal.yml
+- import_playbook: text.yml
 - import_playbook: webstorm.yml

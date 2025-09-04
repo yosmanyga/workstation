@@ -1,30 +1,64 @@
 - hosts: localhost
 
   tasks:
+    - name: Ensure APT keyrings directory exists
+      become: yes
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Add Google Chrome GPG key (dearmored) to /etc/apt/keyrings
+      become: yes
+      shell: |
+        set -euo pipefail
+        curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
+          | gpg --dearmor \
+          | tee /etc/apt/keyrings/google-chrome.gpg > /dev/null
+      args:
+        creates: /etc/apt/keyrings/google-chrome.gpg
+
+    - name: Ensure keyring permissions are correct
+      become: yes
+      file:
+        path: /etc/apt/keyrings/google-chrome.gpg
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Add Google Chrome repository
+      become: yes
+      apt_repository:
+        repo: 'deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main'
+        state: present
+        filename: 'google-chrome'
+
+    - name: Update apt cache (cached)
+      become: yes
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
     - name: Install chrome
       become: yes
       apt:
         name: google-chrome-stable
         state: present
 
-    - name: Configure chrome to use system title bar and borders
+    - name: Check if Chrome preferences file exists
       become: no
-      lineinfile:
-        path: ~/.config/google-chrome/Default/Preferences
-        regexp: '"custom_chrome_frame":\s*\w+'
-        line: '    "custom_chrome_frame": true'
-        insertafter: '"browser": {'
-        state: present
+      stat:
+        path: "{{ lookup('env','HOME') + '/.config/google-chrome/Default/Preferences' }}"
+      register: chrome_prefs
 
-    # Allows unprivileged users to create user namespaces, which is
-    # a feature that Google Chrome relies on for its sandboxing mechanism.
-    # By disabling the restriction, Chrome can properly utilize user namespaces,
-    # which may be necessary for it to function correctly in certain environments
-    - name: Set kernel parameter to allow unprivileged user namespaces permanently
+    - name: Allow unprivileged user namespaces for Chrome sandbox
       become: yes
       lineinfile:
-        path: /etc/sysctl.d/99-sysctl.conf
-        line: 'kernel.apparmor_restrict_unprivileged_userns=0'
+        path: /etc/sysctl.d/40-chrome-unpriv-userns.conf
+        regexp: '^kernel\.unprivileged_userns_clone='
+        line: 'kernel.unprivileged_userns_clone=1'
+        create: yes
+        mode: '0644'
         state: present
 
     - name: Apply sysctl changes

@@ -1,3 +1,35 @@
+En Dell 13, no detecta el firmware para la wifi. Pero funciona con el que tiene por defecto.
+No seleccionar ningún Desktop. Solo standard system utilities.
+
+# Clonezilla
+Boot with UEFI.
+Después de la instalación. Hacer copia del disk con Clonezilla.
+Hay un paso en el que se inserta el disco donde se guardará la imagen. Luego se presiona Ctrl+C para continuar.
+
+# Change font size in terminal
+
+setfont /usr/share/consolefonts/Lat15-TerminusBold32x16.psf.gz
+
+# Sudo
+
+apt install sudo
+usermod -aG sudo yosmanyga
+
+# Mount usb
+
+lsblk
+mkdir /mnt/usb
+mount /dev/sda1 /mnt/usb
+
+# Gnome
+
+apt install gnome-session gnome-terminal gnome-control-center nautilus gdm3
+
+# Ansible
+
+apt install ansible
+ansible-galaxy collection install community.general
+
 # Git
 
 ## Install git

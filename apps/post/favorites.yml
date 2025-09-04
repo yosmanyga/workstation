@@ -4,4 +4,4 @@
     - name: Set favorite apps
       command: >
         gsettings set org.gnome.shell favorite-apps
-        "[\"org.gnome.Terminal.desktop\", \"google-chrome.desktop\", \"webstorm_webstorm.desktop\", \"phpstorm_phpstorm.desktop\"]"
+        "[\"org.gnome.Terminal.desktop\", \"google-chrome.desktop\", \"webstorm.desktop\", \"phpstorm.desktop\"]"

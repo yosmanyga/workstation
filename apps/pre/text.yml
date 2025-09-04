@@ -1,0 +1,9 @@
+- hosts: localhost
+  become: false
+
+  tasks:
+    - name: Install gnome-text-editor
+      become: true
+      apt:
+        name: gnome-text-editor
+        state: present

@@ -1,11 +1,23 @@
 - hosts: localhost
+  become: yes
 
   tasks:
-    - name: Set clock format
+    - name: Ensure python3-psutil is installed
+      apt:
+        name: python3-psutil
+        state: present
+        update_cache: yes
+
+    - name: Set GNOME clock format to 12h
+      become: no
       dconf:
         key: "/org/gnome/desktop/interface/clock-format"
         value: "'12h'"
         state: present
 
     - name: Add Spanish keyboard layout
-      command: gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'es')]"
+      become: no
+      dconf:
+        key: "/org/gnome/desktop/input-sources/sources"
+        value: "[('xkb', 'us'), ('xkb', 'es')]"
+        state: present

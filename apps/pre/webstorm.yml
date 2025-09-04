@@ -1,9 +1,56 @@
 - hosts: localhost
   become: true
 
+  vars:
+    dir: "/opt/webstorm"
+    user: "{{ ansible_user_id }}"
+
   tasks:
-    - name: Install webstorm
-      snap:
-        name: webstorm
-        classic: yes
+    - name: Ensure dependencies are installed
+      apt:
+        name: [tar, wget]
         state: present
+        update_cache: yes
+
+    - name: Create WebStorm install directory
+      file:
+        path: "{{ dir }}"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: Download WebStorm tarball
+      get_url:
+        url: "https://download.jetbrains.com/webstorm/WebStorm-2025.2.1.tar.gz"
+        dest: "/tmp/WebStorm.tar.gz"
+        mode: '0644'
+
+    - name: Extract WebStorm
+      unarchive:
+        src: "/tmp/WebStorm.tar.gz"
+        dest: "{{ dir }}"
+        remote_src: yes
+        extra_opts: [ --strip-components=1 ]
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: Create WebStorm desktop entry
+      copy:
+        dest: "/usr/share/applications/webstorm.desktop"
+        content: |
+          [Desktop Entry]
+          Version=1.0
+          Type=Application
+          Name=WebStorm
+          Exec={{ dir }}/bin/webstorm.sh
+          Icon={{ dir }}/bin/webstorm.png
+          Comment=WebStorm IDE
+          Categories=Development;IDE;
+          Terminal=false
+          StartupWMClass=jetbrains-webstorm
+        mode: '0644'
+
+    - name: Remove downloaded tarball
+      file:
+        path: "/tmp/WebStorm.tar.gz"
+        state: absent

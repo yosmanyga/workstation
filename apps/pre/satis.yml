@@ -1,9 +1,6 @@
 - hosts: localhost
   become: true
 
-  vars_files:
-    - ../../vars.yml
-
   tasks:
     - name: Create bashrc directory
       file: path=~/.bashrc.d state=directory
@@ -23,7 +20,7 @@
 
               docker run --rm -it \
                   --user "$(id -u):$(id -g)" \
-                  --volume "${SATIS_BUILDER}/code:/var/www" \
+                  --volume "${SATIS_BUILDER}/repo:/var/www" \
                   --volume "${SATIS_BUILDER}/docs/repos/repos-versioned:/tmp/input" \
                   --volume "/tmp/satis-versioned/:/tmp/output" \
                   -w /var/www \
@@ -47,7 +44,7 @@
                 `# Mount generated files` \
                 --volume /home/yosmanyga/Work/Tools/satis-versioned:/usr/share/nginx/html \
                 `# Different port to keep free the default one` \
-                --publish 8081:80 \
+                --publish 8281:80 \
                 `# Must run inside the development network` \
                 --network=development \
                 `# Nginx server` \
@@ -60,7 +57,7 @@
 
               docker run --rm -it \
                   --user "$(id -u):$(id -g)" \
-                  --volume "${SATIS_BUILDER}/code:/var/www" \
+                  --volume "${SATIS_BUILDER}/repo:/var/www" \
                   --volume "${SATIS_BUILDER}/docs/repos/repos-wip:/tmp/input" \
                   --volume "/tmp/satis-wip/:/tmp/output" \
                   -w /var/www \
@@ -84,7 +81,7 @@
                 `# Mount generated files` \
                 --volume /home/yosmanyga/Work/Tools/satis-wip:/usr/share/nginx/html \
                 `# Different port to keep free the default one` \
-                --publish 8081:80 \
+                --publish 8282:80 \
                 `# Must run inside the development network` \
                 --network=development \
                 `# Nginx server` \

@@ -1,0 +1,63 @@
+- hosts: localhost
+
+  tasks:
+    - name: Install required packages
+      become: yes
+      apt:
+        name:
+          - git
+          - make
+          - gcc
+          - zip
+          - libglib2.0-dev
+        state: present
+        update_cache: yes
+
+    - name: Clone Advanced Alt-Tab Window Switcher repo
+      git:
+        repo: 'https://github.com/G-dH/advanced-alttab-window-switcher.git'
+        dest: /tmp/advanced-alttab-window-switcher
+        version: HEAD
+        force: yes
+
+    - name: Compile extension
+      community.general.make:
+        chdir: /tmp/advanced-alttab-window-switcher
+
+    - name: Install extension
+      become: no
+      community.general.make:
+        chdir: /tmp/advanced-alttab-window-switcher
+        target: install
+
+    - name: Remove source directory
+      become: yes
+      file:
+        path: /tmp/advanced-alttab-window-switcher
+        state: absent
+
+    - name: Copy schema to system schemas directory
+      become: yes
+      copy:
+        src: "{{ lookup('env','HOME') }}/.local/share/gnome-shell/extensions/advanced-alt-tab@G-dH.github.com/schemas/org.gnome.shell.extensions.advanced-alt-tab-window-switcher.gschema.xml"
+        dest: "/usr/share/glib-2.0/schemas/org.gnome.shell.extensions.advanced-alt-tab-window-switcher.gschema.xml"
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Recompile Glib Schemas
+      become: yes
+      command: glib-compile-schemas /usr/share/glib-2.0/schemas/
+
+    - name: Set 'Default Monitor' to 'Monitor with mouse pointer'
+      become: no
+      command: >
+        gsettings set org.gnome.shell.extensions.advanced-alt-tab-window-switcher switcher-popup-monitor '3'
+      environment:
+        DISPLAY: "{{ lookup('env','DISPLAY') | default(':0') }}"
+        DBUS_SESSION_BUS_ADDRESS: "{{ lookup('env','DBUS_SESSION_BUS_ADDRESS') | default(omit) }}"
+
+  handlers:
+    - name: Recompile Glib Schemas
+      become: yes
+      command: glib-compile-schemas /usr/share/glib-2.0/schemas/

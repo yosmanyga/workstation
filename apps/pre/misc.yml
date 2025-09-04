@@ -1,6 +1,0 @@
-- hosts: localhost
-  become: true
-
-  tasks:
-    - name: Install mc
-      apt: name=mc

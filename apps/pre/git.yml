@@ -49,22 +49,19 @@
           retag () {
               # Check if current folder is a git repo
               if [ ! -d .git ]; then
-              echo "Not a git repository"
-              exit 1
+                  echo "Not a git repository"
+                  exit 1
               fi
-
-              # Remove repo
-              rm -rf .git
-
-              # Initialize new repo
-              git init
 
               # Add all files
               git add .
 
-              # Commit
-              git commit -m "Added first draft"
+              # Amend last commit without changing the message
+              git commit --amend --no-edit
 
-              # Tag
+              # Delete existing tag if it exists
+              git tag -d 0.1.0 2>/dev/null
+    
+              # Create tag on the amended commit
               git tag -a 0.1.0 -m "Implemented first draft"
           }

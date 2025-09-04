@@ -1,0 +1,17 @@
+- hosts: localhost
+
+  tasks:
+    - name: Enable contrib and non-free repositories
+      become: yes
+      lineinfile:
+        path: /etc/apt/sources.list
+        regexp: '^deb http://deb.debian.org/debian'
+        line: 'deb http://deb.debian.org/debian trixie main contrib non-free non-free-firmware'
+        state: present
+      notify: Update apt cache
+
+  handlers:
+    - name: Update apt cache
+      become: yes
+      apt:
+        update_cache: yes

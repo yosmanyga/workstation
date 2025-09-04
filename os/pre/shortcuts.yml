@@ -11,34 +11,51 @@
         key: "/org/gnome/settings-daemon/plugins/media-keys/calculator"
         value: "['<Control><Super>c']"
 
+    # Terminal
+
+    - name: Terminal shortcut name
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/name"
+        value: "'Terminal'"
+
+    - name: Terminal shortcut command
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/command"
+        value: "'gnome-terminal'"
+
+    - name: Terminal shortcut binding
+      dconf:
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/binding"
+        value: "'<Control><Super>t'"
+
     # System Monitor
 
     - name: Set System Monitor shortcut name
       dconf:
-        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/name"
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/name"
         value: "'System Monitor'"
     - name: System Monitor shortcut command
       dconf:
-        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/command"
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/command"
         value: "'gnome-system-monitor'"
     - name: System Monitor shortcut binding
       dconf:
-        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/binding"
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/binding"
         value: "'<Control><Super>m'"
 
     # Suspend
 
     - name: Suspend shortcut name
       dconf:
-        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/name"
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/name"
         value: "'Suspend'"
     - name: Suspend shortcut command
       dconf:
-        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/command"
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/command"
         value: "'systemctl suspend -i'"
     - name: Suspend shortcut binding
       dconf:
-        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/binding"
+        key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/binding"
         value: "'<Control><Super>s'"
 
     # Enable shortcuts
@@ -46,4 +63,4 @@
     - name: Enable custom keybindings
       dconf:
         key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings"
-        value: "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/']"
+        value: "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/']"

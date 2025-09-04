@@ -1,0 +1,9 @@
+- hosts: localhost
+  become: false
+
+  tasks:
+    - name: Install firefox
+      become: true
+      apt:
+        name: firefox-esr
+        state: present

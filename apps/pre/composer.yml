@@ -4,47 +4,47 @@
     - name: Create composer home
       file: path=~/.composer state=directory
 
-    - name: Create bashrc directory
-      file: path=~/.bashrc.d state=directory
+    - name: Ensure directory exists
+      file:
+        path: ~/Work/Tools/composer
+        state: directory
 
-    - name: Create composer bashrc
-      file: path=~/.bashrc.d/composer.sh state=touch
-
-    - name: Add functions to bashrc
-      blockinfile:
-        path: ~/.bashrc.d/composer.sh
-        marker: "# {mark} ANSIBLE MANAGED BLOCK"
-        block: |
+    - name: Create composer.sh with function
+      copy:
+        dest: ~/Work/Tools/composer/composer.sh
+        mode: '0755'
+        content: |
+          #!/bin/bash
           composer () {
             params="--ignore-platform-reqs --no-scripts -vvv"
-          
-            if [ 
-              "$1" = "dump-autoload" 
-              -o "$1" = "clearcache" 
-              -o "$1" = "config" 
-              -o "$1" = "outdated" 
-              -o "$1" = "fund" 
-              -o "$1" = "depends" 
-              -o "$1" = "prohibits" 
+
+            if [
+              "$1" = "dump-autoload" \
+              -o "$1" = "clearcache" \
+              -o "$1" = "config" \
+              -o "$1" = "outdated" \
+              -o "$1" = "fund" \
+              -o "$1" = "depends" \
+              -o "$1" = "prohibits"
             ]; then
               params=""
             fi
-          
+
             tty=
             tty -s && tty=--tty
-          
+
             docker run --rm --interactive --tty \
-              # Current directory
               --volume $PWD:/app \
-              # Share SSH agent
               --volume $SSH_AUTH_SOCK:/ssh-auth.sock \
-              # Share Composer home directory
-              --volume "~/.composer:/tmp" \
-              # Share Projects directory
+              --volume ~/.composer:/tmp \
               --volume ~/Work/:/home/yosmanyga/Work/ \
-              # Development network 
               --network=development \
-              # Pass parameters
               composer $params "$@"
           }
-            
+
+    - name: Add composer tools to PATH in .profile
+      lineinfile:
+        path: ~/.profile
+        line: 'export PATH="$HOME/Work/Tools/composer:$PATH"'
+        insertafter: EOF
+        state: present
