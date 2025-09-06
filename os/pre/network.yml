@@ -4,6 +4,6 @@
   tasks:
     - name: Install terminal
       ansible.builtin.apt:
-        name: ptyxis
+        name: network-manager
         state: present
         update_cache: true

@@ -1,0 +1,15 @@
+- hosts: localhost
+  become: true
+
+  tasks:
+    - name: Install image viewer
+      ansible.builtin.apt:
+        name: eog
+        state: present
+        update_cache: true
+
+    - name: Install video viewer
+      ansible.builtin.apt:
+        name: totem
+        state: present
+        update_cache: true
